@@ -6,17 +6,33 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:root@localhost:5432/account'
 db = SQLAlchemy(app)
 
+
+data_subject = db.Table('data_subject',
+                        db.Column('college_code', db.Integer, db.ForeignKey('College.CODE')),
+                        db.Column('subject_course_code', db.Integer, db.ForeignKey('Course.Course_code'))
+                        )
+
+
 class Data(db.Model):
+    __tablename__ = 'College'
     SR_NO = db.Column(db.Integer)
     CODE = db.Column(db.Integer, primary_key=True)
     INSTITUTE_NAME = db.Column(db.String(2500))
-    pets = db.relationship('Subject', backref='data')
+    Following = db.relationship('Subject', secondary=data_subject, backref='followers')
+
+    def __repr__(self):
+        return f'<Data: {self.INSTITUTE_NAME}'
+
+
 
 class Subject(db.Model):
+    __tablename__ = 'Course'
     SR_no = db.Column(db.Integer)
     Course_code = db.Column(db.Integer, primary_key=True)
     Course_name = db.Column(db.String(1000))
-    data_id = db.Column(db.Integer, db.ForeignKey('data.CODE'))
+    
+    def __repr__(self):
+        return f'<Subject: {self.Course_name}'
 
 
 
